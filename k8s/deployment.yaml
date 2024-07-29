@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myslave
+  namespace: development
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 50%
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: myslave
+  template:
+    metadata:
+      labels:
+        app: myslave
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: myslave
+          image: myslave:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          startupProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 5
+          resources:
+            limits:
+              cpu: '0.50'
+              memory: 512M
+            requests:
+              cpu: '0.25'
+              memory: 256M

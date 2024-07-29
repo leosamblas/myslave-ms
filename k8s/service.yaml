@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: myslave-service
+  namespace: development
+spec:
+  type: ClusterIP
+  selector:
+    app: myslave
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
