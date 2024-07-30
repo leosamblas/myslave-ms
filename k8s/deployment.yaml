@@ -21,7 +21,7 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: myslave
-          image: myslave:latest
+          image: myslave:${DOCKER_IMAGE_TAG}
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
