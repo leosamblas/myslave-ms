@@ -20,20 +20,34 @@ spec:
     spec:
       automountServiceAccountToken: false
       containers:
-        - name: myslave
-          image: myslave:${DOCKER_IMAGE_TAG}
-          imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 8080
-          startupProbe:
-            tcpSocket:
-              port: 8080
-            initialDelaySeconds: 20
-            periodSeconds: 5
-          resources:
-            limits:
-              cpu: '0.50'
-              memory: 512M
-            requests:
-              cpu: '0.25'
-              memory: 256M
+      - name: myslave
+        image: myslave:${DOCKER_IMAGE_TAG}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: "/actuator/health/liveness"
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: "/actuator/health/readiness"
+            port: 8080
+          periodSeconds: 10
+          failureThreshold: 3
+        startupProbe:
+          httpGet:
+            path: "/actuator/health/liveness"
+            port: 8080
+          initialDelaySeconds: 20
+          periodSeconds: 10
+          failureThreshold: 3
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512M
+          requests:
+            cpu: 200m
+            memory: 256M
